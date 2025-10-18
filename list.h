@@ -517,7 +517,23 @@ void list <T> ::push_front(T && data)
 template <typename T>
 void list <T> ::pop_back()
 {
-
+   //check for empty list first
+   if (numElements == 0)
+   {
+      return;
+   }
+   
+   Node* old = pTail;
+   if (pHead == pTail)
+   {
+      pHead = pTail = nullptr;
+   } else {
+      pTail = pTail->pPrev;
+      pTail->pNext = nullptr;
+   }
+   
+   delete old;
+   --numElements;
 }
 
 /*********************************************
@@ -530,7 +546,23 @@ void list <T> ::pop_back()
 template <typename T>
 void list <T> ::pop_front()
 {
-
+   //check for empty list first
+   if (numElements == 0)
+   {
+      return;
+   }
+   
+   Node* old = pHead;
+   if (pHead == pTail)
+   {
+      pHead = pTail = nullptr;
+   } else {
+      pHead = pHead->pNext;
+      pHead->pPrev = nullptr;
+   }
+   
+   delete old;
+   --numElements;
 }
 
 
@@ -549,7 +581,7 @@ T & list <T> :: front()
    //check for empty
    if (empty())
    {
-      throw "Error: UNable to access data from empty list";
+      throw "ERROR: unable to access data from an empty list";
    }
    return pHead->data;
 }
@@ -567,7 +599,7 @@ T & list <T> :: back()
    //check for empty
    if (empty())
    {
-      throw "Error: UNable to access data from empty list";
+      throw "ERROR: unable to access data from an empty list";
    }
    return pTail->data;
 }

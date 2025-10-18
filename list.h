@@ -351,40 +351,10 @@ list <T>& list <T> :: operator = (list <T> && rhs)
 template <typename T>
 list <T> & list <T> :: operator = (list <T> & rhs)
 {
-    iterator itRhs = rhs.begin();
-    iterator itLhs = begin();
-    while((itRhs != rhs.end()) and (itLhs != end()))
-    {
-        *itLhs = *itRhs;
-        ++itRhs;
-        ++itLhs;
-    }
-
-    if (itRhs != rhs.end())
-    {
-        while (itRhs != rhs.end())
-        {
-            push_back(*itRhs);
-            ++itRhs;
-        }
-    }
-    else if (rhs.empty())
-        clear();
-    else if (itLhs != end())
-    {
-        Node* p = itLhs.p;
-        Node* pTail = p->pPrev;
-        Node* pNext = p->pNext;
-        while (p != nullptr)
-        {
-            pNext = p->pNext;
-            delete p;
-            p = pNext;
-            numElements--;
-        }
-        pTail->pNext = nullptr;
-    }
-
+   if (this == &rhs) return *this;
+   clear();
+   for (auto it = rhs.begin(); it != rhs.end(); ++it)
+      push_back(*it);
    return *this;
 }
 
@@ -398,8 +368,10 @@ list <T> & list <T> :: operator = (list <T> & rhs)
 template <typename T>
 list <T>& list <T> :: operator = (const std::initializer_list<T>& rhs)
 {
-
-    return *this;
+   clear();
+   for (const auto& v : rhs)
+      push_back(v);
+   return *this;
 }
 
 /**********************************************
@@ -616,7 +588,34 @@ T & list <T> :: back()
 template <typename T>
 typename list <T> :: iterator  list <T> :: erase(const list <T> :: iterator & it)
 {
-   return end();
+   Node* p = it.p;
+   
+   if (!p)
+   {
+      return end();
+   }
+   
+   Node* next = p->pNext;
+   
+   if (p->pPrev)
+   {
+      p->pPrev->pNext = p->pNext;
+   } else {
+      pHead = p->pNext;
+   }
+   
+   if (p->pNext)
+   {
+      p->pNext->pPrev = p->pPrev;
+   } else {
+      pTail = p->pPrev;   // removed tail
+   }
+   
+   delete p;
+   --numElements;
+   
+   return iterator(next);
+   
 }
 
 

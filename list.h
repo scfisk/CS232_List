@@ -106,8 +106,8 @@ public:
    // Status
    //
 
-   bool empty()  const { return true; }
-   size_t size() const { return 99;   }
+   bool empty()  const { return numElements == 0; }
+   size_t size() const { return numElements;   }
 
 
 private:
@@ -488,6 +488,9 @@ void list <T> ::pop_front()
 
 }
 
+
+//MARK: Access
+
 /*********************************************
  * LIST :: FRONT
  * retrieves the first element in the list
@@ -498,7 +501,12 @@ void list <T> ::pop_front()
 template <typename T>
 T & list <T> :: front()
 {
-   return *(new T);
+   //check for empty
+   if (empty())
+   {
+      throw "Error: UNable to access data from empty list";
+   }
+   return pHead->data;
 }
 
 /*********************************************
@@ -511,8 +519,15 @@ T & list <T> :: front()
 template <typename T>
 T & list <T> :: back()
 {
-   return *(new T);
+   //check for empty
+   if (empty())
+   {
+      throw "Error: UNable to access data from empty list";
+   }
+   return pTail->data;
 }
+
+//MARK: Remove
 
 /******************************************
  * LIST :: REMOVE
@@ -527,6 +542,8 @@ typename list <T> :: iterator  list <T> :: erase(const list <T> :: iterator & it
    return end();
 }
 
+
+//MARK: insert
 /******************************************
  * LIST :: INSERT
  * add an item to the middle of the list

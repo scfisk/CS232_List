@@ -423,6 +423,8 @@ void list <T> :: clear()
     numElements = 0;
 }
 
+//MARK: push
+
 /*********************************************
  * LIST :: PUSH BACK
  * add an item to the end of the list
@@ -433,13 +435,33 @@ void list <T> :: clear()
 template <typename T>
 void list <T> :: push_back(const T & data)
 {
-
+   Node* n = new Node(data);
+   if (numElements == 0)
+   {
+      pHead = pTail = n;
+   } else {
+      n->pPrev     = pTail;
+      pTail->pNext = n;
+      pTail        = n;
+   }
+   
+   ++numElements;
 }
 
 template <typename T>
 void list <T> ::push_back(T && data)
 {
-
+   Node* n = new Node(std::move(data));
+   if (numElements == 0)
+   {
+      pHead = pTail = n;
+   } else {
+      n->pPrev     = pTail;
+      pTail->pNext = n;
+      pTail        = n;
+   }
+   
+   ++numElements;
 }
 
 /*********************************************
@@ -452,15 +474,38 @@ void list <T> ::push_back(T && data)
 template <typename T>
 void list <T> :: push_front(const T & data)
 {
-
+   Node* n = new Node(data);
+   if (numElements == 0)
+   {
+      pHead = pTail = n;
+   } else {
+      n->pNext     = pHead;
+      n->pPrev     = nullptr;
+      pHead->pPrev = n;
+      pHead        = n;
+   }
+   
+   ++numElements;
 }
 
 template <typename T>
 void list <T> ::push_front(T && data)
 {
-
+   Node* n = new Node(std::move(data));
+   if (numElements == 0)
+   {
+      pHead = pTail = n;
+   } else {
+      n->pNext     = pHead;
+      n->pPrev     = nullptr;
+      pHead->pPrev = n;
+      pHead        = n;
+   }
+   
+   ++numElements;
 }
 
+//MARK: pop
 
 /*********************************************
  * LIST :: POP BACK
@@ -556,14 +601,58 @@ template <typename T>
 typename list <T> :: iterator list <T> :: insert(list <T> :: iterator it,
                                                  const T & data) 
 {
-   return end();
+   //if inserting at end, append
+   if (it.p == nullptr)
+   {
+      push_back(data);
+      return iterator(pTail);
+   }
+   
+   Node* cur = it.p; //current node
+   Node* n = new Node(data); //new node
+   n->pNext = cur;
+   n->pPrev = cur->pPrev; // hook that boi up in the list;
+   
+   //check to see if we're at the front of the list
+   if (cur->pPrev) //if the pPrev exists we are not at the front
+   {
+      cur->pPrev->pNext = n; //insert in front of cur if we aren't
+   } else {
+      pHead = n; // if we are then just insert at head
+   }
+   
+   cur->pPrev = n; //complete the hookup
+   ++numElements; //increase numElements
+   return iterator(n); //return iterator pointing to the node
 }
 
 template <typename T>
 typename list <T> :: iterator list <T> :: insert(list <T> :: iterator it,
-   T && data)
+                                                 T && data)
 {
-   return end();
+   // if inserting at end, append
+   if (it.p == nullptr)
+   {
+      push_back(std::move(data));
+      return iterator(pTail);
+   }
+   
+   Node* cur = it.p; //current node
+   Node* n   = new Node(std::move(data)); // new node
+   n->pNext  = cur; //hook em up in the list
+   n->pPrev  = cur->pPrev;
+   
+   //check to see if we're at the front of the list
+   if (cur->pPrev)
+   {
+      cur->pPrev->pNext = n; //insert in front of cur if we aren't
+   } else {
+      pHead = n; // if we are then just insert at head
+   }
+   
+   cur->pPrev = n;
+   ++numElements;
+   return iterator(n);
 }
 
 /**********************************************
